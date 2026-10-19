@@ -1,0 +1,10 @@
+/* Carteles de comun.js: el de tiempo tapa todo el sitio, el de feed solo el inicio. */
+html.ss-tapar-sitio body {
+  display: none !important;
+}
+
+/* Con cualquier cartel, que no se pueda scrollear lo de abajo. */
+html:is(.ss-tapar-sitio, .ss-tapar-feed),
+html:is(.ss-tapar-sitio, .ss-tapar-feed) body {
+  overflow: hidden !important;
+}

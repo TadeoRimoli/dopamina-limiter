@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Dopamina Limiter",
-  "version": "2.2.0",
-  "description": "Bloqueá los Shorts de YouTube, los Reels de Instagram y Facebook, y TikTok, o ponete un límite diario (en videos o en minutos).",
+  "version": "3.0.0",
+  "description": "Poné límites diarios a YouTube, Instagram, Facebook, X y TikTok: Shorts y Reels, pantallas de feed y minutos de uso real. O bloquealos.",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup.html",
@@ -11,25 +11,31 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "css": ["youtube.css"],
+      "css": ["comun.css", "youtube.css"],
       "js": ["comun.js", "youtube.js"],
       "run_at": "document_start"
     },
     {
       "matches": ["*://*.instagram.com/*"],
-      "css": ["instagram.css"],
+      "css": ["comun.css", "instagram.css"],
       "js": ["comun.js", "instagram.js"],
       "run_at": "document_start"
     },
     {
       "matches": ["*://*.facebook.com/*"],
-      "css": ["facebook.css"],
+      "css": ["comun.css", "facebook.css"],
       "js": ["comun.js", "facebook.js"],
       "run_at": "document_start"
     },
     {
+      "matches": ["*://x.com/*", "*://twitter.com/*"],
+      "css": ["comun.css"],
+      "js": ["comun.js", "x.js"],
+      "run_at": "document_start"
+    },
+    {
       "matches": ["*://*.tiktok.com/*"],
-      "css": ["tiktok.css"],
+      "css": ["comun.css"],
       "js": ["comun.js", "tiktok.js"],
       "run_at": "document_start"
     }

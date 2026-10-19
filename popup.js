@@ -2,6 +2,13 @@
 const redes = document.getElementById("redes");
 const filas = {}; // tipo -> { limite, contador }
 
+// Texto al lado del número y cómo se muestra lo usado hoy, según la unidad.
+const UNIDADES = {
+  videos: { etiqueta: "por día", usado: (v) => (v || []).length, sufijo: "" },
+  pantallas: { etiqueta: "pantallas por día", usado: (v) => Math.floor(v || 0), sufijo: " pantallas" },
+  minutos: { etiqueta: "min por día", usado: (v) => Math.floor((v || 0) / 60), sufijo: " min" },
+};
+
 // Guarda un cambio leyendo la config fresca, para no pisar lo de otros tipos.
 const guardar = async (tipo, cambios) => {
   const { config = {} } = await chrome.storage.local.get("config");
@@ -17,19 +24,13 @@ const crear = (tag, props = {}, hijos = []) => {
 
 // Solo actualiza los "Hoy: X / N", así no te interrumpe si estás escribiendo.
 const actualizarContadores = async () => {
-  const { config, vistos } = await leerEstado();
+  const estado = await leerEstado();
   for (const tipo in filas) {
-    const limite = config[tipo].limite;
+    const u = UNIDADES[unidad(tipo)];
     const { contador } = filas[tipo];
-    if (unidad(tipo) === "minutos") {
-      const segundos = vistos[tipo] || 0;
-      contador.textContent = `Hoy: ${Math.floor(segundos / 60)} / ${limite} min`;
-      contador.classList.toggle("lleno", segundos >= limite * 60);
-    } else {
-      const vistosHoy = (vistos[tipo] || []).length;
-      contador.textContent = `Hoy: ${vistosHoy} / ${limite}`;
-      contador.classList.toggle("lleno", vistosHoy >= limite);
-    }
+    contador.textContent = `Hoy: ${u.usado(estado.vistos[tipo])} / ${estado.config[tipo].limite}${u.sufijo}`;
+    // El contador solo se ve en modo límite, así que puedeVer dice si ya llegaste.
+    contador.classList.toggle("lleno", !puedeVer(estado, tipo, null));
   }
 };
 
@@ -62,7 +63,7 @@ const armar = async () => {
       const input = crear("input", { type: "number", min: 1, max: 999, value: config[tipo].limite });
       const contador = crear("span", { className: "contador" });
       const limite = crear("div", { className: "linea limite" }, [
-        crear("label", {}, [input, unidad(tipo) === "minutos" ? "min por día" : "por día"]),
+        crear("label", {}, [input, UNIDADES[unidad(tipo)].etiqueta]),
         contador,
       ]);
       fila.append(limite);
