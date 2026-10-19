@@ -1,0 +1,29 @@
+/* Todo se oculta solo si los Shorts están bloqueados (o llegaste al límite de hoy).
+   Va dentro de :is() para que un selector que el navegador no entienda no rompa el resto. */
+html.ss-bloquear-shorts :is(
+  /* Filas y estantes de Shorts (inicio, búsqueda, suscripciones) */
+  ytd-reel-shelf-renderer,
+  ytd-rich-shelf-renderer[is-shorts],
+  ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+  grid-shelf-view-model:has(a[href^="/shorts"]),
+  ytd-rich-item-renderer:has(a[href^="/shorts/"]),
+  ytd-video-renderer:has(a[href^="/shorts/"]),
+  ytd-grid-video-renderer:has(a[href^="/shorts/"]),
+
+  /* Botón "Shorts" del menú lateral */
+  ytd-guide-entry-renderer:has(a[title="Shorts"]),
+  ytd-mini-guide-entry-renderer:has(a[title="Shorts"]),
+  ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+
+  /* Pestaña "Shorts" en las páginas de canal */
+  yt-tab-shape[tab-title="Shorts"],
+
+  /* Versión móvil (m.youtube.com) */
+  ytm-reel-shelf-renderer,
+  ytm-shorts-lockup-view-model,
+  ytm-shorts-lockup-view-model-v2,
+  ytm-pivot-bar-item-renderer:has(.pivot-shorts),
+  ytm-rich-section-renderer:has(a[href^="/shorts"])
+) {
+  display: none !important;
+}

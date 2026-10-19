@@ -1,0 +1,15 @@
+/* Reels: solo si están bloqueados (o llegaste al límite de hoy) */
+html.ss-bloquear-reels :is(
+  /* Botón "Reels" del menú */
+  a[href="/reels/"],
+
+  /* Reels mezclados en el inicio (Instagram cambia su HTML seguido, puede fallar) */
+  article:has(a[href*="/reel/"])
+) {
+  display: none !important;
+}
+
+/* Botón "Explorar", solo si está bloqueado */
+html.ss-bloquear-explorar a[href="/explore/"] {
+  display: none !important;
+}

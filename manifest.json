@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Sin Shorts ni Reels",
+  "version": "2.0.0",
+  "description": "Bloqueá los Shorts de YouTube y los Reels de Instagram, o ponete un límite diario. Si están bloqueados, los abre como video o post normal.",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Sin Shorts ni Reels"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "css": ["youtube.css"],
+      "js": ["comun.js", "youtube.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.instagram.com/*"],
+      "css": ["instagram.css"],
+      "js": ["comun.js", "instagram.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
