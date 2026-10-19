@@ -1,17 +1,24 @@
-// Cosas compartidas entre las páginas (YouTube, Instagram) y el popup.
+// Cosas compartidas entre las páginas (YouTube, Instagram, Facebook, TikTok) y el popup.
 
 // Tipos de contenido que se pueden configurar, agrupados por red.
+// unidad: "videos" (cuenta cada video distinto, el default) o "minutos" (cuenta tiempo).
 const TIPOS = {
   shorts: { red: "YouTube", nombre: "Shorts", limitable: true },
   reels: { red: "Instagram", nombre: "Reels", limitable: true },
   explorar: { red: "Instagram", nombre: "Explorar", limitable: false },
+  fbreels: { red: "Facebook", nombre: "Reels", limitable: true },
+  tiktok: { red: "TikTok", nombre: "TikTok (todo el sitio)", limitable: true, unidad: "minutos" },
 };
+
+const unidad = (tipo) => TIPOS[tipo].unidad || "videos";
 
 // Lo que se usa si nunca tocaste el popup.
 const DEFAULTS = {
   shorts: { modo: "bloquear", limite: 20 },
   reels: { modo: "bloquear", limite: 20 },
   explorar: { modo: "permitir", limite: 20 },
+  fbreels: { modo: "bloquear", limite: 20 },
+  tiktok: { modo: "permitir", limite: 30 },
 };
 
 // Fecha local en formato YYYY-MM-DD (los contadores arrancan de cero a la medianoche).
@@ -35,6 +42,8 @@ const puedeVer = (estado, tipo, id) => {
   const { modo, limite } = estado.config[tipo];
   if (modo === "permitir") return true;
   if (modo === "bloquear") return false;
+  // Por tiempo: en vistos[tipo] van los segundos usados hoy, el id no importa.
+  if (unidad(tipo) === "minutos") return (estado.vistos[tipo] || 0) < limite * 60;
   const vistos = estado.vistos[tipo] || [];
   return (id && vistos.includes(id)) || vistos.length < limite;
 };
@@ -45,6 +54,13 @@ const registrarVisto = async (tipo, id) => {
   const lista = vistos[tipo] || [];
   if (lista.includes(id)) return;
   vistos[tipo] = [...lista, id];
+  await chrome.storage.local.set({ vistos });
+};
+
+// Suma segundos de uso a un tipo por tiempo (también leyendo el estado fresco).
+const sumarTiempo = async (tipo, segundos) => {
+  const { vistos } = await leerEstado();
+  vistos[tipo] = (vistos[tipo] || 0) + segundos;
   await chrome.storage.local.set({ vistos });
 };
 
@@ -94,7 +110,7 @@ const iniciar = (reglas) => {
 
   actualizar();
 
-  // Interceptamos los clics a contenido bloqueado (las dos páginas navegan sin recargar).
+  // Interceptamos los clics a contenido bloqueado (todas estas páginas navegan sin recargar).
   document.addEventListener(
     "click",
     (e) => {
@@ -121,7 +137,7 @@ const iniciar = (reglas) => {
   chrome.storage.onChanged.addListener(actualizar);
   window.addEventListener("popstate", revisarUrl);
 
-  // Ninguna de las dos avisa bien cuando cambia la URL, así que miramos cada medio segundo.
+  // Ninguna avisa bien cuando cambia la URL, así que miramos cada medio segundo.
   const timer = setInterval(() => {
     if (!chrome.runtime?.id) return clearInterval(timer);
     if (estado && estado.vistos.fecha !== hoy()) actualizar();

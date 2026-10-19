@@ -1,0 +1,14 @@
+/* Reels de Facebook: solo si están bloqueados (o llegaste al límite de hoy).
+   Facebook cambia su HTML seguido, así que esto puede fallar. Es conservador a propósito
+   para no ocultar posts normales. */
+html.ss-bloquear-fbreels :is(
+  /* Accesos a Reels del menú (links relativos o absolutos) */
+  a[href^="/reels/"],
+  a[href*="facebook.com/reels/"],
+
+  /* Estante de Reels en el inicio */
+  [role="region"][aria-label*="Reels"]:has(a[href*="/reel/"]),
+  div[aria-label*="Reels"]:has(a[href*="/reel/"])
+) {
+  display: none !important;
+}
