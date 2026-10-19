@@ -105,7 +105,7 @@ const sumar = (tipo, cantidad) => cambiarUso(tipo, (valor = 0) => valor + cantid
 // y armado con createElement (YouTube no deja usar innerHTML por Trusted Types).
 const crearCapa = (salidas) => {
   const host = document.createElement("dopamina-limiter");
-  const sombra = host.attachShadow({ mode: "closed" });
+  const sombra = host.attachShadow({ mode: "open" });
   const estilo = document.createElement("style");
   estilo.textContent = `
     :host { all: initial; position: fixed; inset: 0; z-index: 2147483647; display: flex;
@@ -166,6 +166,7 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
   let estado = null;
   let ultimoPath = null;
   let tapado = null; // qué cartel se está mostrando, para no tocar el DOM al pedo
+  const CLAVE_SESION = "dopamina-limiter-pendiente";
   let posiciones = new WeakMap(); // último scrollTop de cada cosa que scrollea
   let ultimaActividad = 0;
   const pendiente = {}; // pantallas/segundos sumados en esta pestaña que todavía no se guardaron
@@ -234,7 +235,12 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
     const cambio = path !== ultimoPath;
     if (!cambio && !forzar) return;
     ultimoPath = path;
-    if (cambio) posiciones = new WeakMap(); // página nueva: el scroll arranca de cero
+    if (cambio) {
+      // Página nueva: el scroll arranca de cero (y el de la ventana desde donde está ahora,
+      // así no se pierde el primer movimiento).
+      posiciones = new WeakMap();
+      posiciones.set(window, window.scrollY);
+    }
     const r = buscar(path);
     if (r && !puedeVer(estado, r.tipo, r.id)) {
       location.replace(r.destino);
@@ -269,6 +275,11 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
   const sumarLocal = (tipo, cantidad) => {
     estado.vistos[tipo] = (estado.vistos[tipo] || 0) + cantidad;
     pendiente[tipo] = (pendiente[tipo] || 0) + cantidad;
+    // Si con esto llegaste al límite, tapamos y guardamos ya (que lo vean las otras pestañas).
+    if (!contando(tipo)) {
+      pintar();
+      guardarPendiente(tipo);
+    }
   };
 
   const guardarPendiente = async (tipo) => {
@@ -282,6 +293,19 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
     }
   };
 
+  // Lo que dejó pendiente la página anterior de esta pestaña (ver pagehide más abajo).
+  const recuperarSesion = () => {
+    try {
+      const guardado = JSON.parse(sessionStorage.getItem(CLAVE_SESION) || "null");
+      sessionStorage.removeItem(CLAVE_SESION);
+      if (!guardado || guardado.fecha !== hoy()) return;
+      for (const tipo of [tipoFeed, tipoTiempo]) {
+        if (tipo && guardado.pendiente[tipo] > 0) pendiente[tipo] = (pendiente[tipo] || 0) + guardado.pendiente[tipo];
+      }
+      if (estado) actualizar();
+    } catch {}
+  };
+  recuperarSesion();
   actualizar();
 
   // Interceptamos los clics a contenido bloqueado (todas estas páginas navegan sin recargar).
@@ -330,7 +354,6 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
       // Un salto enorme de una sola vez suele ser el sitio restaurando el scroll, no vos.
       if (delta <= 0 || delta > pantalla * 3) return;
       sumarLocal(tipoFeed, delta / pantalla);
-      if (!contando(tipoFeed)) pintar();
     },
     { capture: true, passive: true }
   );
@@ -339,13 +362,25 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
   chrome.storage.onChanged.addListener(actualizar);
   window.addEventListener("popstate", revisarUrl);
 
-  // Si cerrás o escondés la pestaña, guardamos lo pendiente.
+  // Si escondés la pestaña, guardamos lo pendiente.
   const guardarTodo = () => {
     guardarPendiente(tipoFeed);
     guardarPendiente(tipoTiempo);
   };
   document.addEventListener("visibilitychange", () => document.visibilityState === "hidden" && guardarTodo());
-  window.addEventListener("pagehide", guardarTodo);
+
+  // Al irse de la página no da el tiempo de guardar en chrome.storage (se corta a la mitad),
+  // así que lo pendiente queda en el sessionStorage de la pestaña y la página que sigue lo levanta.
+  window.addEventListener("pagehide", () => {
+    try {
+      sessionStorage.setItem(CLAVE_SESION, JSON.stringify({ fecha: hoy(), pendiente }));
+      for (const tipo in pendiente) pendiente[tipo] = 0;
+    } catch {
+      guardarTodo();
+    }
+  });
+  // Si la página vuelve del caché de atrás/adelante, recuperamos lo que dejamos.
+  window.addEventListener("pageshow", (e) => e.persisted && recuperarSesion());
 
   // Ninguna avisa bien cuando cambia la URL, así que miramos cada medio segundo.
   const timer = setInterval(() => {
@@ -374,7 +409,6 @@ const iniciar = ({ red, reglas = [], feed = [], salidas = [] }) => {
       (Date.now() - ultimaActividad < 60000 || hayVideo())
     ) {
       sumarLocal(tipoTiempo, 5);
-      if (!contando(tipoTiempo)) pintar();
     }
     guardarPendiente(tipoFeed);
     if (vueltas % 3 === 0) guardarPendiente(tipoTiempo);
