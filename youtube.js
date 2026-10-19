@@ -1,10 +1,10 @@
-// Shorts: /shorts/ID -> /watch?v=ID (video normal, sin scroll infinito).
+// Shorts: /shorts/ID -> inicio de YouTube.
 const revisarUrl = iniciar([
   {
     tipo: "shorts",
     revisar: (path) => {
       const m = path.match(/^\/shorts\/([\w-]+)/);
-      return m ? { id: m[1], destino: "/watch?v=" + m[1] } : null;
+      return m ? { id: m[1], destino: "/" } : null;
     },
   },
 ]);

@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Sin Shorts ni Reels",
-  "version": "2.1.0",
+  "name": "Dopamina Limiter",
+  "version": "2.2.0",
   "description": "Bloqueá los Shorts de YouTube, los Reels de Instagram y Facebook, y TikTok, o ponete un límite diario (en videos o en minutos).",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Sin Shorts ni Reels"
+    "default_title": "Dopamina Limiter"
   },
   "content_scripts": [
     {

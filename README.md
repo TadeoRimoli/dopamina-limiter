@@ -1,4 +1,4 @@
-# Sin Shorts ni Reels
+# Dopamina Limiter
 
 Extensión para Brave (y Chrome) que te saca de encima los Shorts de YouTube, los Reels de Instagram y Facebook, y TikTok. Para cada cosa elegís si la permitís, si te ponés un límite diario o si la bloqueás del todo.
 
@@ -9,19 +9,19 @@ Hacé clic en el botón de la extensión en la barra para configurarla. Los camb
 ### YouTube
 
 - **Shorts**: permitir, límite diario o bloquear (por defecto: bloquear, límite 20).
-  - Bloqueado: oculta los estantes de Shorts, el botón del menú y la pestaña de los canales, y si abrís un Short te lo muestra como video normal (`/shorts/ID` → `/watch?v=ID`).
+  - Bloqueado: oculta los estantes de Shorts, el botón del menú y la pestaña de los canales, y si abrís un Short te manda al inicio de YouTube.
 
 ### Instagram
 
 - **Reels**: permitir, límite diario o bloquear (por defecto: bloquear, límite 20).
-  - Bloqueado: oculta el botón de Reels y los reels del inicio, abre cada reel como post normal (`/reel/ID` → `/p/ID/`) y la pestaña de Reels te manda al inicio.
+  - Bloqueado: oculta el botón de Reels y los reels del inicio, y si abrís un reel o la pestaña de Reels te manda al inicio.
 - **Explorar**: permitir o bloquear (por defecto: permitir).
   - Bloqueado: oculta el botón y te manda al inicio si entrás.
 
 ### Facebook
 
 - **Reels**: permitir, límite diario o bloquear (por defecto: bloquear, límite 20).
-  - Bloqueado: oculta el acceso a Reels del menú y el estante de Reels del inicio, abre cada reel como video normal (`/reel/ID` → `/watch/?v=ID`) y la pestaña de Reels te manda al inicio.
+  - Bloqueado: oculta el acceso a Reels del menú y el estante de Reels del inicio, y si abrís un reel o la pestaña de Reels te manda al inicio.
 
 ### TikTok
 

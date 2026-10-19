@@ -1,10 +1,10 @@
 iniciar([
-  // /reel/ID o /reels/ID (también /usuario/reel/ID) -> /p/ID (post normal).
+  // /reel/ID o /reels/ID (también /usuario/reel/ID) -> inicio.
   {
     tipo: "reels",
     revisar: (path) => {
       const m = path.match(/^\/(?:[\w.]+\/)?reels?\/([\w-]+)/);
-      return m && m[1] !== "audio" ? { id: m[1], destino: "/p/" + m[1] + "/" } : null;
+      return m && m[1] !== "audio" ? { id: m[1], destino: "/" } : null;
     },
   },
   // Pestaña de Reels -> inicio.
