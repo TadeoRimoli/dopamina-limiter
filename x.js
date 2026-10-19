@@ -3,7 +3,7 @@ iniciar({
   red: "X",
   feed: ["/home"],
   salidas: [
-    ["Mensajes", "/messages"],
+    ["Mensajes", "/i/chat"],
     ["Notificaciones", "/notifications"],
     ["Buscar", "/explore"],
   ],

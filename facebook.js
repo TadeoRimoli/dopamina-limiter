@@ -14,10 +14,10 @@ iniciar({
         return m ? { id: m[1], destino: "/" } : null;
       },
     },
-    // Pestaña de Reels (/reels/ y lo que cuelgue de ahí) -> inicio.
+    // Pestaña de Reels (/reel/ sin ID, /reels/ y lo que cuelgue de ahí) -> inicio.
     {
       tipo: "fbreels",
-      revisar: (path) => (/^\/reels(?:\/|$)/.test(path) ? { id: null, destino: "/" } : null),
+      revisar: (path) => (/^\/(?:reel\/?$|reels(?:\/|$))/.test(path) ? { id: null, destino: "/" } : null),
     },
   ],
 });

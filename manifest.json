@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Dopamina Limiter",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Poné límites diarios a YouTube, Instagram, Facebook, X y TikTok: Shorts y Reels, pantallas de feed y minutos de uso real. O bloquealos.",
   "permissions": ["storage"],
   "action": {

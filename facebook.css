@@ -2,9 +2,11 @@
    Facebook cambia su HTML seguido, así que esto puede fallar. Es conservador a propósito
    para no ocultar posts normales. */
 html.ss-bloquear-fbreels :is(
-  /* Accesos a Reels del menú (links relativos o absolutos) */
+  /* Accesos a Reels del menú (links relativos o absolutos; el de arriba es /reel/?s=tab) */
   a[href^="/reels/"],
   a[href*="facebook.com/reels/"],
+  a[href="/reel/"],
+  a[href^="/reel/?"],
 
   /* Estante de Reels en el inicio */
   [role="region"][aria-label*="Reels"]:has(a[href*="/reel/"]),

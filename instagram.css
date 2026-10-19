@@ -3,8 +3,9 @@ html.ss-bloquear-reels :is(
   /* Botón "Reels" del menú */
   a[href="/reels/"],
 
-  /* Reels mezclados en el inicio (Instagram cambia su HTML seguido, puede fallar) */
-  article:has(a[href*="/reel/"])
+  /* Reels mezclados en el inicio: linkean a /reel/ID o /reels/ID (las fotos con música
+     linkean a /reels/audio/, esas no). Instagram cambia su HTML seguido, puede fallar. */
+  article:has(a[href*="/reel/"], a[href*="/reels/"]:not([href*="/reels/audio/"]))
 ) {
   display: none !important;
 }
